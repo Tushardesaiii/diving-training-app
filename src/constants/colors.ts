@@ -1,6 +1,6 @@
 export const Colors = {
   // Core backgrounds — deep ocean palette
-  background: '#01060D', // Deeper, almost black blue
+  background: '#000C1C', // Deep navy background used across the app
   surface: '#0B121D', // Dark navy surface
   surfaceElevated: '#121B29',
   surfaceMuted: '#1A2332',

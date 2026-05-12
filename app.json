@@ -7,7 +7,7 @@
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "splash": {
-      "backgroundColor": "#080F1A",
+      "backgroundColor": "#000C1C",
       "resizeMode": "contain"
     },
     "ios": {
@@ -20,7 +20,7 @@
     "android": {
       "package": "com.speedaiapps.apneafreediving",
       "adaptiveIcon": {
-        "backgroundColor": "#080F1A"
+        "backgroundColor": "#000C1C"
       }
     },
     "plugins": [
