@@ -40,6 +40,31 @@ export function SettingsScreen() {
       />
       <SafeAreaView style={styles.safe} edges={['bottom']}>
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+          {/* Diver Hero */}
+          <View style={styles.heroCard}>
+            <Image
+              source={{ uri: 'https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=1200&q=80&auto=format&fit=crop' }}
+              style={styles.heroImage}
+            />
+            <LinearGradient
+              colors={['rgba(2, 12, 20, 0)', 'rgba(2, 12, 20, 0.8)']}
+              start={{ x: 0.5, y: 0.2 }}
+              end={{ x: 0.5, y: 1 }}
+              style={styles.heroOverlay}
+            />
+            <View style={styles.heroCopy}>
+              <AppText variant="label" color="#CBEFFF" style={styles.heroKicker}>
+                Freedive profile
+              </AppText>
+              <AppText variant="h2" color={Colors.textInverse}>
+                Dive deeper
+              </AppText>
+              <AppText variant="bodySmall" color="rgba(255,255,255,0.72)">
+                Track training, stay calm, and build your breath-hold sessions.
+              </AppText>
+            </View>
+          </View>
+
           {/* Profile */}
           <TouchableOpacity style={styles.profileRow}>
             <Image 
@@ -164,6 +189,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
     paddingBottom: 40,
+  },
+  heroCard: {
+    height: 180,
+    borderRadius: 22,
+    overflow: 'hidden',
+    marginBottom: 20,
+    backgroundColor: Colors.surfaceElevated,
+  },
+  heroImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
+  },
+  heroOverlay: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  heroCopy: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    padding: 18,
+  },
+  heroKicker: {
+    marginBottom: 6,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   title: {
     marginBottom: 24,
