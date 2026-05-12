@@ -5,10 +5,14 @@ import {
   StyleSheet,
   Alert,
   TouchableOpacity,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp, useIsFocused } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { StatusBar } from 'expo-status-bar';
+import * as NavigationBar from 'expo-navigation-bar';
+import { Platform } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { Spacing, Radius } from '../../constants/spacing';
 import { Copy } from '../../constants/copy';
@@ -39,8 +43,33 @@ export function SessionScreen() {
   const [showEffortPrompt, setShowEffortPrompt] = useState(false);
   const [selectedEffort, setSelectedEffort] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [topBarAnim] = useState(new Animated.Value(1));
 
+  const isFocused = useIsFocused();
   const { status, phase, currentRound, totalRounds, timeRemaining, phaseDuration, completedRounds, totalHoldTime } = timerState;
+
+  // Immersive UI: Hide status bar and nav bar when focused and session is active
+  React.useEffect(() => {
+    const isImmersive = isFocused && (status === 'running');
+    
+    if (isImmersive) {
+      if (Platform.OS === 'android') {
+        NavigationBar.setVisibilityAsync('hidden');
+        NavigationBar.setBehaviorAsync('overlay-swipe');
+      }
+      Animated.timing(topBarAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(topBarAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [isFocused, status]);
 
   // Show effort prompt when session completes
   React.useEffect(() => {
@@ -197,8 +226,9 @@ export function SessionScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+      <StatusBar hidden={isFocused && (status === 'running' || status === 'paused')} style="light" animated />
       {/* Top bar */}
-      <View style={styles.topBar}>
+      <Animated.View style={[styles.topBar, { opacity: topBarAnim }]}>
         <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
           <AppText variant="body" color={Colors.textSecondary}>✕</AppText>
         </TouchableOpacity>
@@ -206,7 +236,7 @@ export function SessionScreen() {
           {table.label}
         </AppText>
         <View style={styles.backBtn} />
-      </View>
+      </Animated.View>
 
       {/* Main timer area */}
       <View style={styles.timerArea}>

@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import * as NavigationBar from 'expo-navigation-bar';
+import { View, ActivityIndicator, StyleSheet, Platform } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -19,6 +20,16 @@ function LoadingScreen() {
 
 export default function App() {
   const bootstrap = useAppBootstrap();
+
+  React.useEffect(() => {
+    // Configure navigation bar for Android
+    if (Platform.OS === 'android') {
+      NavigationBar.setBackgroundColorAsync(Colors.background);
+      NavigationBar.setButtonStyleAsync('light');
+      NavigationBar.setVisibilityAsync('hidden');
+      NavigationBar.setBehaviorAsync('overlay-swipe');
+    }
+  }, []);
 
   return (
     <GestureHandlerRootView style={styles.root}>
