@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "sdkVersion": "54.0.0",
+    "name": "Apnea Freediving",
+    "slug": "apnea-freediving",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#080F1A",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.speedaiapps.apneafreediving",
+      "infoPlist": {
+        "NSMotionUsageDescription": "Used for breath phase haptic feedback during training sessions."
+      }
+    },
+    "android": {
+      "package": "com.speedaiapps.apneafreediving",
+      "adaptiveIcon": {
+        "backgroundColor": "#080F1A"
+      }
+    },
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}
