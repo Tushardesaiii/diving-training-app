@@ -5,12 +5,15 @@ import {
   StyleSheet,
   TouchableOpacity,
   RefreshControl,
+  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Bell, Timer, Fish, ChevronRight, LayoutGrid } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { LungsIcon } from '../../components/LungsIcon';
+import { KidneyIcon } from '../../components/KidneyIcon';
 import { Colors } from '../../constants/colors';
 import { AppText } from '../../components/AppText';
 import { RootStackParamList, TrainingMode, UserProfile, PersonalizedPlan } from '../../types/app';
@@ -28,6 +31,10 @@ import {
 } from '../../utils/apnea';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
+
+const { width } = Dimensions.get('window');
+const GRID_SPACING = 16;
+const ITEM_WIDTH = (width - 40 - GRID_SPACING) / 2;
 
 export function HomeScreen() {
   const navigation = useNavigation<Nav>();
@@ -78,7 +85,7 @@ export function HomeScreen() {
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#00D1FF" />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}
       >
         {/* Header */}
         <View style={styles.header}>
@@ -123,68 +130,88 @@ export function HomeScreen() {
           <View style={styles.sectionHeader}>
             <View>
               <AppText variant="h3" style={styles.sectionTitle}>Quick Start</AppText>
-              <AppText variant="bodySmall" color="rgba(255,255,255,0.5)">Pick a training mode</AppText>
+              <AppText variant="bodySmall" color="rgba(255,255,255,0.5)">Select a training mode to begin</AppText>
             </View>
             <TouchableOpacity>
-              <AppText variant="bodySmall" style={{ color: '#00D1FF', fontWeight: '600' }}>Learn more</AppText>
+              <AppText variant="bodySmall" style={{ color: Colors.primary, fontWeight: '600' }}>Learn more</AppText>
             </TouchableOpacity>
           </View>
 
           <View style={styles.grid}>
             {/* CO2 Table */}
             <TouchableOpacity 
-              style={[styles.gridItem, { borderColor: 'rgba(0, 209, 255, 0.2)' }]}
+              activeOpacity={0.7}
               onPress={() => startSession('CO2')}
             >
-              <View style={[styles.gridIcon, ]}>
-                <LungsIcon size={24} color="#00D1FF" />
-              </View>
-              <View style={styles.itemTextContainer}>
-                <AppText style={styles.itemTitle}>CO₂ Table</AppText>
-                <AppText style={styles.itemCaption}>Constant hold, decreasing rest</AppText>
-              </View>
+              <LinearGradient
+                colors={['rgba(0, 209, 255, 0.08)', 'rgba(0, 209, 255, 0.02)']}
+                style={[styles.gridItem, { borderColor: 'rgba(0, 209, 255, 0.15)' }]}
+              >
+                <View style={[styles.gridIcon, { backgroundColor: 'rgba(0, 209, 255, 0.1)' }]}>
+                  <KidneyIcon size={32} color={Colors.primary} />
+                </View>
+                <View style={styles.itemTextContainer}>
+                  <AppText style={styles.itemTitle}>CO₂ Table</AppText>
+                  <AppText style={styles.itemCaption}>Build CO₂ tolerance with decreasing rest</AppText>
+                </View>
+              </LinearGradient>
             </TouchableOpacity>
 
             {/* O2 Table */}
             <TouchableOpacity 
-              style={[styles.gridItem, { borderColor: 'rgba(165, 214, 167, 0.2)' }]}
+              activeOpacity={0.7}
               onPress={() => startSession('O2')}
             >
-              <View style={[styles.gridIcon, ]}>
-                <LungsIcon size={24} color="#A5D6A7" />
-              </View>
-              <View style={styles.itemTextContainer}>
-                <AppText style={styles.itemTitle}>O₂ Table</AppText>
-                <AppText style={styles.itemCaption}>Increasing hold, constant rest</AppText>
-              </View>
+              <LinearGradient
+                colors={['rgba(16, 199, 111, 0.08)', 'rgba(16, 199, 111, 0.02)']}
+                style={[styles.gridItem, { borderColor: 'rgba(16, 199, 111, 0.15)' }]}
+              >
+                <View style={[styles.gridIcon, { backgroundColor: 'rgba(16, 199, 111, 0.1)' }]}>
+                  <KidneyIcon size={32} color={Colors.success} />
+                </View>
+                <View style={styles.itemTextContainer}>
+                  <AppText style={styles.itemTitle}>O₂ Table</AppText>
+                  <AppText style={styles.itemCaption}>Improve O₂ efficiency with increasing hold</AppText>
+                </View>
+              </LinearGradient>
             </TouchableOpacity>
 
             {/* Max Hold */}
             <TouchableOpacity 
-              style={[styles.gridItem, { borderColor: 'rgba(124, 92, 248, 0.2)' }]}
+              activeOpacity={0.7}
               onPress={() => startSession('MAX')}
             >
-              <View style={[styles.gridIcon,]}>
-                <Timer size={24} color="#7C5CF8" />
-              </View>
-              <View style={styles.itemTextContainer}>
-                <AppText style={styles.itemTitle}>Max Hold</AppText>
-                <AppText style={styles.itemCaption}>Max breath-hold attempt</AppText>
-              </View>
+              <LinearGradient
+                colors={['rgba(124, 92, 248, 0.08)', 'rgba(124, 92, 248, 0.02)']}
+                style={[styles.gridItem, { borderColor: 'rgba(124, 92, 248, 0.15)' }]}
+              >
+                <View style={[styles.gridIcon, { backgroundColor: 'rgba(124, 92, 248, 0.1)' }]}>
+                  <KidneyIcon size={32} color={Colors.phaseBreathe} />
+                </View>
+                <View style={styles.itemTextContainer}>
+                  <AppText style={styles.itemTitle}>Max Hold</AppText>
+                  <AppText style={styles.itemCaption}>Test your limits with a maximum hold</AppText>
+                </View>
+              </LinearGradient>
             </TouchableOpacity>
 
             {/* Spearfishing */}
             <TouchableOpacity 
-              style={[styles.gridItem, { borderColor: 'rgba(20, 184, 166, 0.2)' }]}
+              activeOpacity={0.7}
               onPress={() => {}}
             >
-              <View style={[styles.gridIcon,]}>
-                <Fish size={24} color="#14B8A6" />
-              </View>
-              <View style={styles.itemTextContainer}>
-                <AppText style={styles.itemTitle}>Spearfishing</AppText>
-                <AppText style={styles.itemCaption}>Spearfishing specific training</AppText>
-              </View>
+              <LinearGradient
+                colors={['rgba(255, 184, 0, 0.08)', 'rgba(255, 184, 0, 0.02)']}
+                style={[styles.gridItem, { borderColor: 'rgba(255, 184, 0, 0.15)' }]}
+              >
+                <View style={[styles.gridIcon, { backgroundColor: 'rgba(255, 184, 0, 0.1)' }]}>
+                  <KidneyIcon size={32} color={Colors.warning} />
+                </View>
+                <View style={styles.itemTextContainer}>
+                  <AppText style={styles.itemTitle}>MDR Prep</AppText>
+                  <AppText style={styles.itemCaption}>Trigger Mammalian Dive Reflex response</AppText>
+                </View>
+              </LinearGradient>
             </TouchableOpacity>
           </View>
         </View>
@@ -193,7 +220,7 @@ export function HomeScreen() {
         <TouchableOpacity style={styles.planCard} activeOpacity={0.85}>
           <View style={styles.planHeader}>
             <View style={styles.planIcon}>
-               <LayoutGrid size={24} color="#00D1FF" />
+               <LayoutGrid size={24} color={Colors.primary} />
             </View>
             <View style={styles.planInfo}>
               <AppText style={styles.planTitle}>Personalized Plan</AppText>
@@ -214,11 +241,11 @@ export function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#020B14' },
+  safe: { flex: 1, backgroundColor: Colors.background },
   scroll: {
     paddingHorizontal: 20,
     paddingTop: 10,
-    paddingBottom: 20, // Reduced from 40 to bring UI down
+    paddingBottom: 40,
   },
   header: {
     flexDirection: 'row',
@@ -236,8 +263,8 @@ const styles = StyleSheet.create({
     height: 10,
     borderRadius: 5,
     borderWidth: 2,
-    borderColor: '#020B14',
-    backgroundColor: '#00D1FF',
+    borderColor: Colors.background,
+    backgroundColor: Colors.primary,
   },
   title: {
     fontSize: 32,
@@ -256,13 +283,13 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
     gap: 8,
-    marginBottom: 25,
+    marginBottom: 30,
   },
   statCard: {
     flex: 1,
     backgroundColor: 'rgba(255, 255, 255, 0.04)',
-    borderRadius: 14,
-    padding: 12,
+    borderRadius: 16,
+    padding: 14,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.06)',
   },
@@ -285,7 +312,7 @@ const styles = StyleSheet.create({
   },
   statChange: {
     fontSize: 11,
-    color: '#4ADE80',
+    color: Colors.success,
     fontWeight: '600',
     marginTop: 2,
   },
@@ -295,107 +322,105 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   section: {
-    marginBottom: 25,
+    marginBottom: 30,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
     color: '#FFFFFF',
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    rowGap: 10,
+    gap: GRID_SPACING,
   },
   gridItem: {
-    width: '48.5%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 14,
-    padding: 14,
-    borderWidth: 1,
-    
+    width: ITEM_WIDTH,
+    height: ITEM_WIDTH * 1.15,
+    borderRadius: 24,
+    padding: 18,
+    borderWidth: 1.5,
+    justifyContent: 'space-between',
   },
   gridIcon: {
-    width: 44, // Increased size
-    height: 44,
-    borderRadius: 10,
+    width: 52,
+    height: 52,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10,
   },
   itemTextContainer: {
-    flex: 1,
+    marginTop: 12,
   },
   itemTitle: {
-    fontSize: 14,
+    fontSize: 17,
     fontWeight: '700',
     color: '#FFFFFF',
+    marginBottom: 4,
   },
   itemCaption: {
-    fontSize: 10,
-    color: 'rgba(255,255,255,0.4)',
-    lineHeight: 13,
-    marginTop: 2,
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.5)',
+    lineHeight: 15,
   },
   planCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.04)',
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 20,
+    padding: 20,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.08)',
+    marginBottom: 20,
   },
   planHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 14,
     marginBottom: 16,
   },
   planIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: 'rgba(0, 209, 255, 0.1)',
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    backgroundColor: Colors.primaryMuted,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(0, 209, 255, 0.2)',
+    borderColor: Colors.primaryGlow,
   },
   planTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
     color: '#FFFFFF',
   },
   planSub: {
-    fontSize: 12,
+    fontSize: 13,
     color: 'rgba(255,255,255,0.5)',
   },
   planInfo: {
     flex: 1,
   },
   progressWrapper: {
-    gap: 10,
+    gap: 12,
   },
   progressBar: {
-    height: 6,
+    height: 8,
     backgroundColor: 'rgba(255, 255, 255, 0.06)',
-    borderRadius: 3,
+    borderRadius: 4,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#00D1FF',
-    borderRadius: 3,
+    backgroundColor: Colors.primary,
+    borderRadius: 4,
   },
   progressText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
     color: 'rgba(255,255,255,0.4)',
   },

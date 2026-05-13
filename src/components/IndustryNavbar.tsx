@@ -3,6 +3,7 @@ import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Home, Activity, Calendar, Clock, Settings as SettingsIcon } from 'lucide-react-native';
+import { KidneyIcon } from './KidneyIcon';
 import { Colors } from '../constants/colors';
 import { AppText } from './AppText';
 
@@ -31,7 +32,7 @@ export function IndustryNavbar({ state, descriptors, navigation }: BottomTabBarP
             const size = 22;
             switch (route.name) {
               case 'Home': return <Home size={size} color={color} />;
-              case 'Training': return <Activity size={size} color={color} />;
+              case 'Training': return <KidneyIcon size={size} color={color} />;
               case 'Plan': return <Calendar size={size} color={color} />;
               case 'History': return <Clock size={size} color={color} />;
               case 'Settings': return <SettingsIcon size={size} color={color} />;
