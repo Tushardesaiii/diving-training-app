@@ -4,15 +4,18 @@ import {
   ScrollView,
   StyleSheet,
   RefreshControl,
+  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Flame, Timer, Activity, TrendingUp, Trophy, Calendar, Award } from 'lucide-react-native';
 import { Colors } from '../../constants/colors';
 import { Spacing, Radius } from '../../constants/spacing';
 import { Copy } from '../../constants/copy';
 import { AppText } from '../../components/AppText';
-import { AppCard } from '../../components/AppCard';
-import { MetricCard, MetricRow } from '../../components/MetricCard';
+import { LungsFillIcon } from '../../components/LungsFillIcon';
+import { KidneyIcon } from '../../components/KidneyIcon';
 import { TrainingSession, PBRecord } from '../../types/app';
 import {
   getSessions,
@@ -24,9 +27,12 @@ import {
 import { secondsToMMSS, calcPBGrowthPercent } from '../../utils/apnea';
 import { formatRelativeDate, formatShortDate } from '../../utils/dates';
 
+const { width } = Dimensions.get('window');
+const METRIC_WIDTH = (width - 40 - 12) / 2;
+
 const MODE_COLORS: Record<string, string> = {
   CO2: Colors.primary,
-  O2: Colors.accent,
+  O2: Colors.success,
   MAX: '#7C5CF8',
   SPEARO: Colors.warning,
 };
@@ -76,102 +82,148 @@ export function HistoryScreen() {
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
-        bounces={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}
       >
         {/* Header */}
         <View style={styles.header}>
-          <AppText variant="displayMedium">{Copy.history.title}</AppText>
+          <AppText variant="displayMedium" style={styles.title}>{Copy.history.title}</AppText>
+          <AppText variant="body" color={Colors.textSecondary}>Your training performance and milestones</AppText>
         </View>
 
-        {/* Key metrics */}
-        <MetricRow style={styles.metricRow}>
-          <MetricCard
-            label={Copy.home.streakLabel}
-            value={String(streak)}
-            unit="days"
-            accent={Colors.accent}
-            style={styles.metricFlex}
-          />
-          <MetricCard
-            label="This Week"
-            value={String(weekSessions)}
-            unit="sessions"
-            style={styles.metricFlex}
-          />
-        </MetricRow>
-        <MetricRow style={styles.metricRow}>
-          <MetricCard
-            label="Total Sessions"
-            value={String(sessions.length)}
-            style={styles.metricFlex}
-          />
-          <MetricCard
-            label="Total Hold Time"
-            value={secondsToMMSS(totalHoldTime)}
-            accent={Colors.primary}
-            style={styles.metricFlex}
-          />
-        </MetricRow>
+        {/* Key Metrics Grid */}
+        <View style={styles.metricsGrid}>
+          <LinearGradient
+            colors={['rgba(255, 184, 0, 0.1)', 'rgba(255, 184, 0, 0.02)']}
+            style={styles.metricCard}
+          >
+            <View style={[styles.metricIcon, { backgroundColor: 'rgba(255, 184, 0, 0.1)' }]}>
+              <Flame size={20} color="#FFB800" />
+            </View>
+            <View>
+              <AppText variant="label" color={Colors.textTertiary}>STREAK</AppText>
+              <AppText variant="h2">{streak} <AppText variant="bodySmall" color={Colors.textSecondary}>days</AppText></AppText>
+            </View>
+          </LinearGradient>
 
-        {/* PB growth */}
+          <LinearGradient
+            colors={['rgba(0, 209, 255, 0.1)', 'rgba(0, 209, 255, 0.02)']}
+            style={styles.metricCard}
+          >
+            <View style={[styles.metricIcon, { backgroundColor: 'rgba(0, 209, 255, 0.1)' }]}>
+              <Activity size={20} color={Colors.primary} />
+            </View>
+            <View>
+              <AppText variant="label" color={Colors.textTertiary}>THIS WEEK</AppText>
+              <AppText variant="h2">{weekSessions} <AppText variant="bodySmall" color={Colors.textSecondary}>sess</AppText></AppText>
+            </View>
+          </LinearGradient>
+
+          <LinearGradient
+            colors={['rgba(16, 199, 111, 0.1)', 'rgba(16, 199, 111, 0.02)']}
+            style={styles.metricCard}
+          >
+            <View style={[styles.metricIcon, { backgroundColor: 'rgba(16, 199, 111, 0.1)' }]}>
+              <Trophy size={20} color={Colors.success} />
+            </View>
+            <View>
+              <AppText variant="label" color={Colors.textTertiary}>SESSIONS</AppText>
+              <AppText variant="h2">{sessions.length}</AppText>
+            </View>
+          </LinearGradient>
+
+          <LinearGradient
+            colors={['rgba(124, 92, 248, 0.1)', 'rgba(124, 92, 248, 0.02)']}
+            style={styles.metricCard}
+          >
+            <View style={[styles.metricIcon, { backgroundColor: 'rgba(124, 92, 248, 0.1)' }]}>
+              <Timer size={20} color="#7C5CF8" />
+            </View>
+            <View>
+              <AppText variant="label" color={Colors.textTertiary}>TOTAL HOLD</AppText>
+              <AppText variant="h2">{secondsToMMSS(totalHoldTime)}</AppText>
+            </View>
+          </LinearGradient>
+        </View>
+
+        {/* PB Timeline Section */}
         {currentPB && (
           <View style={styles.section}>
-            <AppText variant="label" style={styles.sectionTitle}>PB TIMELINE</AppText>
-            <AppCard accent={Colors.primary} elevated>
-              <View style={styles.pbRow}>
-                <View style={styles.pbItem}>
-                  <AppText variant="label" color={Colors.textSecondary}>STARTING PB</AppText>
-                  <AppText variant="metricSmall">
-                    {startingPB ? secondsToMMSS(startingPB) : '—'}
-                  </AppText>
+             <View style={styles.sectionHeader}>
+                <AppText variant="h3">PB Progression</AppText>
+                <TrendingUp size={18} color={Colors.primary} />
+             </View>
+            
+            <LinearGradient
+              colors={['rgba(255, 255, 255, 0.08)', 'rgba(255, 255, 255, 0.02)']}
+              style={styles.pbTimelineCard}
+            >
+              <View style={styles.pbVisual}>
+                <View style={styles.pbPoint}>
+                  <AppText variant="label" color={Colors.textTertiary}>STARTING</AppText>
+                  <AppText variant="h3">{startingPB ? secondsToMMSS(startingPB) : '—'}</AppText>
                 </View>
-                <AppText style={{ fontSize: 20, color: Colors.textTertiary }}>→</AppText>
-                <View style={styles.pbItem}>
-                  <AppText variant="label" color={Colors.textSecondary}>CURRENT PB</AppText>
-                  <AppText variant="metricSmall" color={Colors.primary}>{secondsToMMSS(currentPB)}</AppText>
+                <View style={styles.pbLineContainer}>
+                  <View style={styles.pbLine} />
+                  <LinearGradient
+                    colors={[Colors.primary, Colors.secondary]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.pbLineFill}
+                  />
                 </View>
-                {growthPercent !== null && growthPercent > 0 && (
-                  <>
-                    <AppText style={{ fontSize: 20, color: Colors.textTertiary }}>→</AppText>
-                    <View style={styles.pbItem}>
-                      <AppText variant="label" color={Colors.textSecondary}>GROWTH</AppText>
-                      <AppText variant="metricSmall" color={Colors.success}>+{growthPercent}%</AppText>
-                    </View>
-                  </>
-                )}
+                <View style={styles.pbPoint}>
+                  <AppText variant="label" color={Colors.textTertiary}>CURRENT</AppText>
+                  <AppText variant="h3" color={Colors.primary}>{secondsToMMSS(currentPB)}</AppText>
+                </View>
               </View>
+
+              {growthPercent !== null && growthPercent > 0 && (
+                <View style={styles.growthBadge}>
+                  <Award size={14} color={Colors.success} />
+                  <AppText variant="captionStrong" color={Colors.success}>+{growthPercent}% IMPROVEMENT</AppText>
+                </View>
+              )}
+
               {pbHistory.length > 1 && (
-                <View style={styles.pbHistory}>
-                  {pbHistory.slice(0, 5).map((record, i) => (
-                    <View key={i} style={styles.pbHistoryRow}>
-                      <AppText variant="caption" color={Colors.textSecondary}>
+                <View style={styles.miniPbList}>
+                  {pbHistory.slice(0, 3).map((record, i) => (
+                    <View key={i} style={styles.miniPbRow}>
+                       <View style={styles.miniPbDot} />
+                       <AppText variant="caption" color={Colors.textSecondary} style={{ flex: 1, marginLeft: 12 }}>
                         {formatShortDate(record.recordedAt)}
                       </AppText>
-                      <AppText variant="captionStrong" color={Colors.primary}>
+                      <AppText variant="captionStrong" color={Colors.text}>
                         {secondsToMMSS(record.value)}
                       </AppText>
                     </View>
                   ))}
                 </View>
               )}
-            </AppCard>
+            </LinearGradient>
           </View>
         )}
 
-        {/* Session list */}
+        {/* Recent Sessions */}
         <View style={styles.section}>
-          <AppText variant="label" style={styles.sectionTitle}>{Copy.history.recentSessions.toUpperCase()}</AppText>
+          <View style={styles.sectionHeader}>
+            <AppText variant="h3">{Copy.history.recentSessions}</AppText>
+            <Calendar size={18} color={Colors.textTertiary} />
+          </View>
+          
           {sessions.length === 0 ? (
-            <AppCard>
+            <View style={styles.emptyCard}>
               <AppText variant="body" color={Colors.textSecondary} align="center">
                 {Copy.history.noHistory}
               </AppText>
-            </AppCard>
+            </View>
           ) : (
             <View style={styles.sessionList}>
-              {sessions.map((session) => (
-                <SessionHistoryRow key={session.id} session={session} />
+              {sessions.map((session, idx) => (
+                <SessionHistoryRow 
+                  key={session.id} 
+                  session={session} 
+                  isLast={idx === sessions.length - 1} 
+                />
               ))}
             </View>
           )}
@@ -181,34 +233,53 @@ export function HistoryScreen() {
   );
 }
 
-function SessionHistoryRow({ session }: { session: TrainingSession }) {
+function SessionHistoryRow({ session, isLast }: { session: TrainingSession; isLast?: boolean }) {
   const accentColor = MODE_COLORS[session.mode] ?? Colors.primary;
-  const roundsComplete = session.rounds.length;
+  const Icon = session.mode === 'MAX' ? KidneyIcon : LungsFillIcon;
 
   return (
-    <View style={styles.sessionRow}>
-      <View style={[styles.sessionModeDot, { backgroundColor: accentColor }]} />
-      <View style={styles.sessionInfo}>
-        <View style={styles.sessionTop}>
-          <AppText variant="h3">{session.tableLabel}</AppText>
-          {session.isPersonalBest && (
-            <View style={styles.pbBadge}>
-              <AppText variant="captionStrong" color={Colors.pro}>PB</AppText>
+    <View style={styles.sessionRowWrapper}>
+       {!isLast && <View style={styles.sessionConnector} />}
+       <View style={[styles.sessionIconBox, { backgroundColor: `${accentColor}15`, borderColor: `${accentColor}30` }]}>
+          <Icon size={18} color={accentColor} />
+       </View>
+       
+       <View style={styles.sessionMain}>
+          <View style={styles.sessionTopRow}>
+            <AppText variant="bodyStrong">{session.tableLabel}</AppText>
+            <AppText variant="caption" color={Colors.textTertiary}>{formatRelativeDate(session.startedAt)}</AppText>
+          </View>
+          
+          <View style={styles.sessionMetaRow}>
+            <View style={styles.sessionMetaItem}>
+               <AppText variant="caption" color={Colors.textSecondary}>
+                {session.rounds.length} rounds · {secondsToMMSS(session.totalHoldTime)} hold
+               </AppText>
             </View>
+            {session.isPersonalBest && (
+              <View style={styles.pbBadgeMini}>
+                <AppText variant="captionStrong" color={Colors.pro}>PB</AppText>
+              </View>
+            )}
+          </View>
+       </View>
+
+       <View style={styles.sessionRight}>
+          <AppText variant="label" color={accentColor} style={{ fontSize: 10 }}>{session.mode}</AppText>
+          {session.effortScore !== undefined && (
+             <View style={styles.effortRow}>
+                {[1, 2, 3, 4, 5].map((s) => (
+                   <View 
+                    key={s} 
+                    style={[
+                      styles.effortDot, 
+                      { backgroundColor: s <= session.effortScore ? accentColor : 'rgba(255,255,255,0.1)' }
+                    ]} 
+                  />
+                ))}
+             </View>
           )}
-        </View>
-        <AppText variant="caption" color={Colors.textSecondary}>
-          {formatRelativeDate(session.startedAt)} · {roundsComplete} rounds · Hold {secondsToMMSS(session.totalHoldTime)}
-        </AppText>
-        {session.effortScore !== undefined && (
-          <AppText variant="caption" color={Colors.textTertiary}>
-            Effort: {session.effortScore}/5
-          </AppText>
-        )}
-      </View>
-      <View style={styles.sessionMode}>
-        <AppText variant="label" color={accentColor}>{session.mode}</AppText>
-      </View>
+       </View>
     </View>
   );
 }
@@ -217,86 +288,176 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.background },
   scroll: {
     paddingHorizontal: Spacing.base,
-    paddingBottom: Spacing.huge,
-    gap: Spacing.xl,
+    paddingTop: Spacing.base,
+    paddingBottom: 120,
   },
   header: {
-    paddingTop: Spacing.lg,
+    marginBottom: Spacing.xl,
   },
-  metricRow: {
-    gap: Spacing.sm,
-    marginTop: -Spacing.sm,
+  title: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginBottom: 4,
   },
-  metricFlex: {
-    flex: 1,
+  metricsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginBottom: 32,
+  },
+  metricCard: {
+    width: METRIC_WIDTH,
+    borderRadius: 20,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
+    gap: 12,
+  },
+  metricIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   section: {
-    gap: Spacing.sm,
+    marginBottom: 32,
   },
-  sectionTitle: {
-    marginBottom: 2,
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
   },
-  pbRow: {
+  pbTimelineCard: {
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  pbVisual: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
+    marginBottom: 20,
   },
-  pbItem: {
+  pbPoint: {
     alignItems: 'center',
     gap: 4,
   },
-  pbHistory: {
-    marginTop: Spacing.md,
-    gap: Spacing.xs,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    paddingTop: Spacing.md,
+  pbLineContainer: {
+    flex: 1,
+    height: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    marginHorizontal: 16,
+    borderRadius: 2,
+    marginTop: 18,
   },
-  pbHistoryRow: {
+  pbLine: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  pbLineFill: {
+    height: '100%',
+    width: '100%',
+    borderRadius: 2,
+  },
+  growthBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(16, 199, 111, 0.1)',
+    alignSelf: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 99,
+    gap: 6,
+    marginBottom: 20,
+  },
+  miniPbList: {
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    paddingTop: 16,
+    gap: 10,
+  },
+  miniPbRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  miniPbDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: Colors.primary,
+  },
+  sessionList: {
+    gap: 0,
+  },
+  sessionRowWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+    gap: 16,
+  },
+  sessionConnector: {
+    position: 'absolute',
+    left: 20,
+    top: 40,
+    bottom: -16,
+    width: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    zIndex: -1,
+  },
+  sessionIconBox: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+  },
+  sessionMain: {
+    flex: 1,
+    gap: 2,
+  },
+  sessionTopRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  sessionList: {
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    overflow: 'hidden',
-  },
-  sessionRow: {
+  sessionMetaRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: Spacing.base,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.borderFaint,
-    gap: Spacing.md,
+    gap: 8,
   },
-  sessionModeDot: {
-    width: 8,
-    height: 8,
+  sessionMetaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  pbBadgeMini: {
+    backgroundColor: Colors.proMuted,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
     borderRadius: 4,
-    marginTop: 2,
-    alignSelf: 'flex-start',
   },
-  sessionInfo: {
-    flex: 1,
+  sessionRight: {
+    alignItems: 'flex-end',
+    gap: 4,
+  },
+  effortRow: {
+    flexDirection: 'row',
     gap: 3,
   },
-  sessionTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
+  effortDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
   },
-  pbBadge: {
-    backgroundColor: Colors.proMuted,
-    borderRadius: Radius.xs,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
-  sessionMode: {
-    alignItems: 'flex-end',
+  emptyCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 20,
+    padding: 32,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.06)',
   },
 });
+

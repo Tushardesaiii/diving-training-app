@@ -22,12 +22,11 @@ export default function App() {
   const bootstrap = useAppBootstrap();
 
   React.useEffect(() => {
-    // Configure navigation bar for Android
+    // Configure navigation bar for Android to be edge-to-edge
     if (Platform.OS === 'android') {
-      NavigationBar.setBackgroundColorAsync(Colors.background);
+      NavigationBar.setPositionAsync('absolute');
+      NavigationBar.setBackgroundColorAsync('#00000000'); // Transparent
       NavigationBar.setButtonStyleAsync('light');
-      NavigationBar.setVisibilityAsync('hidden');
-      NavigationBar.setBehaviorAsync('overlay-swipe');
     }
   }, []);
 

@@ -1,16 +1,23 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Home, Activity, Calendar, Clock, Settings as SettingsIcon } from 'lucide-react-native';
 import { KidneyIcon } from './KidneyIcon';
 import { Colors } from '../constants/colors';
 import { AppText } from './AppText';
 
 export function IndustryNavbar({ state, descriptors, navigation }: BottomTabBarProps) {
+  const insets = useSafeAreaInsets();
+  
+  // Calculate dynamic bottom padding. For Android 3-button navigation, insets.bottom will be positive.
+  // For gesture navigation, it will also be positive but smaller.
+  const bottomPadding = Math.max(insets.bottom, Platform.OS === 'ios' ? 25 : 12);
+  const totalHeight = (Platform.OS === 'ios' ? 65 : 60) + bottomPadding;
+
   return (
     <View style={styles.container}>
-      <View style={styles.tabBar}>
+      <View style={[styles.tabBar, { height: totalHeight, paddingBottom: bottomPadding }]}>
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
           const isFocused = state.index === index;
@@ -76,8 +83,6 @@ const styles = StyleSheet.create({
   tabBar: {
     flexDirection: 'row',
     backgroundColor: 'rgba(1, 6, 13, 0.95)',
-    height: Platform.OS === 'ios' ? 90 : 70,
-    paddingBottom: Platform.OS === 'ios' ? 25 : 10,
     paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.08)',
