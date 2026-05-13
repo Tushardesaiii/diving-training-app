@@ -14,6 +14,7 @@ import { Bell, Timer, Fish, ChevronRight, LayoutGrid } from 'lucide-react-native
 import { LinearGradient } from 'expo-linear-gradient';
 import { LungsIcon } from '../../components/LungsIcon';
 import { KidneyIcon } from '../../components/KidneyIcon';
+import { LungsFillIcon } from '../../components/LungsFillIcon';
 import { Colors } from '../../constants/colors';
 import { AppText } from '../../components/AppText';
 import { RootStackParamList, TrainingMode, UserProfile, PersonalizedPlan } from '../../types/app';
@@ -148,7 +149,7 @@ export function HomeScreen() {
                 style={[styles.gridItem, { borderColor: 'rgba(0, 209, 255, 0.15)' }]}
               >
                 <View style={[styles.gridIcon, { backgroundColor: 'rgba(0, 209, 255, 0.1)' }]}>
-                  <KidneyIcon size={32} color={Colors.primary} />
+                  <LungsFillIcon size={32} color={Colors.primary} />
                 </View>
                 <View style={styles.itemTextContainer}>
                   <AppText style={styles.itemTitle}>CO₂ Table</AppText>
@@ -167,7 +168,7 @@ export function HomeScreen() {
                 style={[styles.gridItem, { borderColor: 'rgba(16, 199, 111, 0.15)' }]}
               >
                 <View style={[styles.gridIcon, { backgroundColor: 'rgba(16, 199, 111, 0.1)' }]}>
-                  <KidneyIcon size={32} color={Colors.success} />
+                  <LungsFillIcon size={32} color={Colors.success} />
                 </View>
                 <View style={styles.itemTextContainer}>
                   <AppText style={styles.itemTitle}>O₂ Table</AppText>
@@ -245,7 +246,7 @@ const styles = StyleSheet.create({
   scroll: {
     paddingHorizontal: 20,
     paddingTop: 10,
-    paddingBottom: 40,
+    paddingBottom: 120,
   },
   header: {
     flexDirection: 'row',
